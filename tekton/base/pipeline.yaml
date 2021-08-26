@@ -32,11 +32,24 @@ spec:
         - name: output
           workspace: pipeline-shared-workspace
 
-    - name: run-tests
+    - name: install-dependencies
       taskRef:
         name: npm
       runAfter:
         - clone-source-code
+      params:
+        - name: ARGS
+          value:
+            - clean-install
+      workspaces:
+        - name: source
+          workspace: pipeline-shared-workspace
+
+    - name: run-tests
+      taskRef:
+        name: npm
+      runAfter:
+        - install-dependencies
       params:
         - name: ARGS
           value:
@@ -73,17 +86,17 @@ spec:
         - name: source
           workspace: pipeline-shared-workspace
 
-    # - name: deploy
-    #   taskRef:
-    #     name: deploy
-    #   runAfter:
-    #     - configure
-    #   params:
-    #     - name: namespace
-    #       value: "$(params.deployment-namespace)"
-    #   workspaces:
-    #     - name: source
-    #       workspace: pipeline-shared-workspace
+    - name: deploy
+      taskRef:
+        name: deploy
+      runAfter:
+        - configure
+      params:
+        - name: namespace
+          value: "$(params.deployment-namespace)"
+      workspaces:
+        - name: source
+          workspace: pipeline-shared-workspace
 
     # - name: verify
     #   taskRef:

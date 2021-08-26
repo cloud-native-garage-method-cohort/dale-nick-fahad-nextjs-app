@@ -1,0 +1,18 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: deploy
+spec:
+  params:
+    - name: namespace
+      description: namespace for the deployment
+  workspaces:
+    - name: source
+      description: contents of source code repository
+  steps:
+    - name: deploy
+      image: quay.io/upslopeio/kubectl:latest
+      script: |
+        #!/bin/sh
+        cd source
+        kubectl apply -n $(params.namespace) -f ./k8s/manifests.yaml
