@@ -1,0 +1,24 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: kustomize
+spec:
+  params:
+    - name: commit
+      type: string
+      description: source code commit id, also used as the image tag
+    - name: image-name
+      type: string
+      description: name of image to deploy
+  workspaces:
+    - name: source
+      description: contents of source code repository
+  steps:
+    - name: build
+      image: quay.io/upslopeio/kustomize:latest
+      script: |
+        #!/bin/sh
+        cd source/k8s
+        kustomize edit set image "$(params.image-name):$(params.commit)"
+        kustomize build > manifests.yaml
+        cat manifests.yaml

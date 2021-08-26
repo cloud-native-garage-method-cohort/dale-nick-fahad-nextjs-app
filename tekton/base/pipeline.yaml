@@ -1,0 +1,125 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: nextjs-app-pipeline
+spec:
+  workspaces:
+    - name: pipeline-shared-workspace
+  params:
+    - name: source-code-repo
+      type: string
+      description: github repo URL
+    - name: docker-image
+      type: string
+      description: name of the published image
+    - name: deployment-name
+      type: string
+      description: name to use when deploying the app
+    - name: deployment-namespace
+      type: string
+      description: namespace to deploy the application to
+
+  tasks:
+
+    - name: clone-source-code
+      taskRef:
+        name: git-clone
+        kind: ClusterTask
+      params:
+        - name: url
+          value: "$(params.source-code-repo)"
+      workspaces:
+        - name: output
+          workspace: pipeline-shared-workspace
+
+    - name: run-tests
+      taskRef:
+        name: npm
+      runAfter:
+        - clone-source-code
+      params:
+        - name: ARGS
+          value:
+            - run
+            - lint
+      workspaces:
+        - name: source
+          workspace: pipeline-shared-workspace
+
+    - name: build-and-publish
+      taskRef:
+        name: buildah
+        kind: ClusterTask
+      runAfter:
+        - run-tests
+      params:
+        - name: IMAGE
+          value: "$(params.docker-image):$(tasks.clone-source-code.results.commit)"
+      workspaces:
+        - name: source
+          workspace: pipeline-shared-workspace
+
+    - name: configure
+      taskRef:
+        name: kustomize
+      runAfter:
+        - build-and-publish
+      params:
+        - name: commit
+          value: "$(tasks.clone-source-code.results.commit)"
+        - name: image-name
+          value: "$(params.docker-image)"
+      workspaces:
+        - name: source
+          workspace: pipeline-shared-workspace
+
+    # - name: deploy
+    #   taskRef:
+    #     name: deploy
+    #   runAfter:
+    #     - configure
+    #   params:
+    #     - name: namespace
+    #       value: "$(params.deployment-namespace)"
+    #   workspaces:
+    #     - name: source
+    #       workspace: pipeline-shared-workspace
+
+    # - name: verify
+    #   taskRef:
+    #     name: verify
+    #   runAfter:
+    #     - deploy
+    #   params:
+    #     - name: app-name
+    #       value: "$(params.deployment-name)"
+    #     - name: namespace
+    #       value: "$(params.deployment-namespace)"
+
+    # - name: gitops
+    #   taskRef:
+    #     name: commit-manifest
+    #   runAfter:
+    #     - deploy
+    #   params:
+    #     - name: app-name
+    #       value: "$(params.deployment-name)"
+    #     - name: namespace
+    #       value: "$(params.deployment-namespace)"
+    #     - name: sha
+    #       value: "$(tasks.clone-source-code.results.commit)"
+    #   workspaces:
+    #     - name: source
+    #       workspace: pipeline-shared-workspace
+
+    # - name: notify
+    #   taskRef:
+    #     name: send-to-webhook-slack
+    #   runAfter:
+    #     - verify
+    #     - gitops
+    #   params:
+    #     - name: webhook-secret
+    #       value: slack-credentials
+    #     - name: message
+    #       value: "New version of $(params.deployment-name) has been deployed to the $(params.deployment-namespace) namespace, and is now available at $(tasks.verify.results.url)"

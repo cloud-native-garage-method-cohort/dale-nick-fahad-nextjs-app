@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.openshift.io/runtime: js
+  name: nextjs-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: nextjs-app-instance
+      app.kubernetes.io/name: nextjs-app
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: nextjs-app-instance
+        app.kubernetes.io/name: nextjs-app
+    spec:
+      containers:
+        - name: nextjs-app
+          image: quay.io/dale-lane/nextjs-dale-lane
+          ports:
+            - containerPort: 3000
+              name: http
+              protocol: TCP
+          env:
+            - name: DEBUG
+              value: "myapp:*"
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /
+              port: 3000
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /
+              port: http
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1

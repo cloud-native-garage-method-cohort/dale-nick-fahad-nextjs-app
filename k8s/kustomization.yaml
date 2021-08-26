@@ -1,0 +1,13 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+- deployment.yaml
+- service.yaml
+- route.yaml
+commonLabels:
+  app: nextjs-app
+  app.kubernetes.io/instance: nextjs-app-instance
+  app.kubernetes.io/name: nextjs-app
+images:
+- name: quay.io/dale-lane/nextjs-dale-lane
+  newTag: 5f702d935df4de80d7cc9f77ffb71b24e5fc60a9

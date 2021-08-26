@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: nextjs-app
+spec:
+  ports:
+    - name: http
+      port: 80
+      protocol: TCP
+      targetPort: 3000
+  selector:
+    app.kubernetes.io/instance: nextjs-app-instance
+    app.kubernetes.io/name: nextjs-app
+  sessionAffinity: None
+  type: ClusterIP
