@@ -98,17 +98,6 @@ spec:
         - name: source
           workspace: pipeline-shared-workspace
 
-    # - name: verify
-    #   taskRef:
-    #     name: verify
-    #   runAfter:
-    #     - deploy
-    #   params:
-    #     - name: app-name
-    #       value: "$(params.deployment-name)"
-    #     - name: namespace
-    #       value: "$(params.deployment-namespace)"
-
     # - name: gitops
     #   taskRef:
     #     name: commit-manifest
@@ -124,15 +113,3 @@ spec:
     #   workspaces:
     #     - name: source
     #       workspace: pipeline-shared-workspace
-
-    # - name: notify
-    #   taskRef:
-    #     name: send-to-webhook-slack
-    #   runAfter:
-    #     - verify
-    #     - gitops
-    #   params:
-    #     - name: webhook-secret
-    #       value: slack-credentials
-    #     - name: message
-    #       value: "New version of $(params.deployment-name) has been deployed to the $(params.deployment-namespace) namespace, and is now available at $(tasks.verify.results.url)"
