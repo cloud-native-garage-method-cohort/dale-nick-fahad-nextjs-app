@@ -24,8 +24,31 @@ spec:
               name: http
               protocol: TCP
           env:
-            - name: DEBUG
-              value: "myapp:*"
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-credentials
+                  key: dbuser
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-credentials
+                  key: dbpassword
+            - name: DB_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-credentials
+                  key: dbhost
+            - name: DB_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-credentials
+                  key: dbport
+            - name: DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-credentials
+                  key: dbname
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
