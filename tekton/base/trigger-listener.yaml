@@ -3,6 +3,7 @@ kind: EventListener
 metadata:
   name: vcs-trigger-listener
 spec:
+  serviceAccountName: vcs-trigger-sa
   triggers:
     - interceptors:
         - github:
