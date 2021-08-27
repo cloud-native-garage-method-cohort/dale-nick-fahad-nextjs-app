@@ -12,7 +12,7 @@ let client;
 
 function getDbConnection() {
     if (client) {
-        return client;
+        return Promise.resolve(client);
     }
     if (process.env.DB_NAME &&
         process.env.DB_USER &&
