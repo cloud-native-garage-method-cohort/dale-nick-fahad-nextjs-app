@@ -20,20 +20,21 @@ function getDbConnection() {
         process.env.DB_HOST &&
         process.env.DB_PORT)
     {
+        client = new Client({
+            user: process.env.DB_USER,
+            host: process.env.DB_HOST,
+            database: process.env.DB_NAME,
+            password: process.env.DB_PASSWORD,
+            port: process.env.DB_PORT,
+        });
+        return client.connect()
+            .then(() => {
+                return client;
+            });
+    }
+    else {
         throw new Error('Missing required configuration');
     }
-
-    client = new Client({
-        user: process.env.DB_USER,
-        host: process.env.DB_HOST,
-        database: process.env.DB_NAME,
-        password: process.env.DB_PASSWORD,
-        port: process.env.DB_PORT,
-    });
-    return client.connect()
-        .then(() => {
-            return client;
-        });
 }
 
 function submitRequestToDb() {
