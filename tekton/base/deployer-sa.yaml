@@ -4,3 +4,4 @@ metadata:
   name: deployer-sa
 secrets:
   - name: quay-io-credentials
+  - name: github-credentials
