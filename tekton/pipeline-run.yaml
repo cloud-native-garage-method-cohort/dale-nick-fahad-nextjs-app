@@ -3,6 +3,7 @@ kind: PipelineRun
 metadata:
   generateName: nextjs-pipelinerun-
 spec:
+  serviceAccountName: deployer-sa
   params:
     - name: source-code-repo
       value: https://github.com/cloud-native-garage-method-cohort/dale-nick-fahad-nextjs-app

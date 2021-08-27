@@ -72,11 +72,24 @@ spec:
         - name: source
           workspace: pipeline-shared-workspace
 
+    - name: fetch-secret
+      taskRef:
+        name: fetch-secret
+      runAfter:
+        - build-and-publish
+      params:
+        - name: secret-name
+          value: postgres-credentials
+        - name: source-namespace
+          value: dale-fahad-super-secret-secrets
+        - name: target-namespace
+          value: "$(params.deployment-namespace)"
+
     - name: configure
       taskRef:
         name: kustomize
       runAfter:
-        - build-and-publish
+        - fetch-secret
       params:
         - name: commit
           value: "$(tasks.clone-source-code.results.commit)"
