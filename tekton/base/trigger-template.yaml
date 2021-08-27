@@ -1,0 +1,31 @@
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerTemplate
+metadata:
+  name: vcs-trigger-template
+spec:
+  resourcetemplates:
+    - apiVersion: tekton.dev/v1beta1
+      kind: PipelineRun
+      metadata:
+        generateName: nextjs-pipelinerun-
+      spec:
+        params:
+          - name: source-code-repo
+            value: https://github.com/cloud-native-garage-method-cohort/dale-nick-fahad-nextjs-app
+          - name: deployment-name
+            value: nextjs-app
+          - name: deployment-namespace
+            value: "$(context.pipelineRun.namespace)"
+          - name: docker-image
+            value: quay.io/dale-lane/nextjs-dale-lane
+        pipelineRef:
+          name: nextjs-app-pipeline
+        workspaces:
+          - name: pipeline-shared-workspace
+            volumeClaimTemplate:
+              spec:
+                accessModes:
+                  - ReadWriteOnce
+                resources:
+                  requests:
+                    storage: 100Mi

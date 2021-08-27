@@ -1,0 +1,15 @@
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: EventListener
+metadata:
+  name: vcs-trigger-listener
+spec:
+  triggers:
+    - interceptors:
+        - github:
+            secretRef:
+              secretName: github-interceptor-secret
+              secretKey: secretToken
+      bindings:
+        - ref: vcs-trigger-binding
+      template:
+        name: vcs-trigger-template
