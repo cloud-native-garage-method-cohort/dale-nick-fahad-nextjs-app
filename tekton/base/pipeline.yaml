@@ -98,18 +98,18 @@ spec:
         - name: source
           workspace: pipeline-shared-workspace
 
-    # - name: gitops
-    #   taskRef:
-    #     name: commit-manifest
-    #   runAfter:
-    #     - deploy
-    #   params:
-    #     - name: app-name
-    #       value: "$(params.deployment-name)"
-    #     - name: namespace
-    #       value: "$(params.deployment-namespace)"
-    #     - name: sha
-    #       value: "$(tasks.clone-source-code.results.commit)"
-    #   workspaces:
-    #     - name: source
-    #       workspace: pipeline-shared-workspace
+    - name: gitops
+      taskRef:
+        name: commit-manifest
+      runAfter:
+        - deploy
+      params:
+        - name: app-name
+          value: "$(params.deployment-name)"
+        - name: namespace
+          value: "$(params.deployment-namespace)"
+        - name: sha
+          value: "$(tasks.clone-source-code.results.commit)"
+      workspaces:
+        - name: source
+          workspace: pipeline-shared-workspace
